@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+require '../vendor/autoload.php';
+require '../lib/Worker.php';
+use ShellQueue\Worker;
+
+$settings_file = '../conf/settings.yml';
+$conf = array(
+    'host' => 'localhost',
+    'user' => 'guest',
+    'password' => 'guest',
+    'number_of_workers' => 3
+);
+if (file_exists($settings_file)) {
+    $conf = array_merge($conf,yaml_parse_file($settings_file));
+}
+try {
+    print sprintf("Starting with %d workers\n", $conf['number_of_workers']);
+    $worker = new Worker($conf['host'], $conf['user'], $conf['password'], $conf['number_of_workers']);
+    $worker->run();
+} catch (Exception $e) {
+    print sprintf('Failed to start with error: %s', $e->getMessage());
+}

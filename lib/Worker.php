@@ -9,10 +9,16 @@ class Worker
      *
      * @var integer
      */
-    protected $number_of_threads;
+    private $number_of_threads;
+    private $host;
+    private $user;
+    private $password;
 
-    public function __construct($number_of_threads)
+    public function __construct($host, $user, $password, $number_of_threads)
     {
+        $this->host = $host;
+        $this->user = $user;
+        $this->password = $password;
         $this->number_of_threads = $number_of_threads;
     }
 
@@ -22,9 +28,9 @@ class Worker
             $pid = pcntl_fork();
 
             if (! $pid) {
-                $connection = new AMQPConnection('localhost', 5672, 'guest', 'guest');
+                $connection = new AMQPConnection($this->host, 5672, $this->user, $this->password);
                 $channel = $connection->channel();
-                $channel->queue_declare('job', false, false, false, false);
+                $channel->queue_declare('shell-queue', false, false, false, false);
                 $callback = function ($msg) {
                     echo " Running Job \n";
                     $cmd = $msg->body;
@@ -32,7 +38,7 @@ class Worker
                     echo " Finished Job \n";
                 };
 
-                $channel->basic_consume('job', '', false, true, false, false, $callback);
+                $channel->basic_consume('shell-queue', '', false, true, false, false, $callback);
 
                 while (count($channel->callbacks)) {
                     $channel->wait();
