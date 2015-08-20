@@ -1,10 +1,11 @@
 #!/usr/bin/env php
 <?php
-require '../vendor/autoload.php';
-require '../lib/Worker.php';
+$dir = __DIR__;
+require $dir . '/../vendor/autoload.php';
+require $dir . '/../lib/Worker.php';
 use ShellQueue\Worker;
 
-$settings_file = '../conf/settings.yml';
+$settings_file = $dir . '/../conf/settings.yml';
 $conf = array(
     'host' => 'localhost',
     'user' => 'guest',
