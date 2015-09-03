@@ -34,7 +34,9 @@ class Worker
                 $callback = function ($msg) {
                     echo " Running Job \n";
                     $cmd = $msg->body;
-                    $result = shell_exec($cmd);
+                    $result = array();
+                    $result_code = 0;
+                    $result = exec($cmd, $result, $result_code);
                     echo " Finished Job \n";
                 };
 
